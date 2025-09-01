@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <!-- 優化：確保在不同裝置上都能正確縮放 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 優化：讓行動版瀏覽器頂部 UI 與網頁背景色一致，提升沉浸感 -->
+    <meta name="theme-color" content="#000000">
+    <title>神秘光環儀控介面</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+        /* 優化：更穩定的盒模型，避免 padding 和 border 影響佈局 */
+        html, body {
+            box-sizing: border-box;
+        }
+
+        /* 全域樣式與響應式設計 */
+        body {
+            background-color: #000;
+            margin: 0;
+            /* 優化：增加內距，避免內容緊貼螢幕邊緣 */
+            padding: 15px;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* 優化：使用 min-height 確保內容超出螢幕高度時可以滾動 */
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            /* 優化：在手機上使用稍大的 max-width，讓內容更清晰 */
+            max-width: 480px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        /* 神秘光環部分 */
+        .ring-container {
+            width: 90vmin;
+            /* 優化：給定一個更適合手機的 max-width */
+            max-width: 380px;
+            aspect-ratio: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 優化：增加與下方控制項的距離 */
+            margin-bottom: 30px;
+            box-sizing: border-box;
+            animation: pulse 4s infinite ease-in-out;
+            /* 優化：在觸控螢幕上，防止在操作畫布時觸發瀏覽器的捲動或縮放手勢 */
+            touch-action: none;
+        }
+
+        #ring-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            opacity: 0.9;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        /* 快速脈衝動畫 */
+        @keyframes pulse-fast {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        /* HSB 控制介面部分 */
+        .controls {
+            width: 100%;
+            /* 優化：在手機上使用稍大的 max-width */
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            /* 優化：增加控制項之間的間距 */
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            /* 優化：增加內距讓內容更舒適 */
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .control-label {
+            /* 優化：微幅增加字體大小，提升可讀性 */
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .slider-container {
+            width: 100%;
+            position: relative;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            /* 優化：加高滑桿軌道，方便觸控 */
+            height: 12px;
+            background: #333;
+            border-radius: 6px;
+            outline: none;
+            transition: background 0.2s ease-in-out;
+        }
+
+        #hue {
+            background: linear-gradient(to right, hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%));
+        }
+
+        /* 優化：加大滑塊，使其成為更大的觸控目標 */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .control-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 14px 28px; /* 優化：增加 padding */
+            font-size: 1rem;     /* 優化：增加字體大小 */
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            min-height: 48px; /* 優化：確保最小觸控高度 */
+            
+            /* --- 變更：調整樣式以適應新位置 --- */
+            width: 100%; /* 按鈕寬度改為100%，填滿容器 */
+            margin-bottom: 10px; /* 增加與下方控制項的間距 */
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+        }
+
+        .control-button.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .control-button.active:hover {
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="ring-container">
+            <canvas id="ring-canvas"></canvas>
+        </div>
+
+        <div class="controls">
+            <!-- --- 變更：將按鈕移至此處 --- -->
+            <button id="control-button" class="control-button">開始</button>
+
+            <div class="control-group">
+                <label for="hue" class="control-label">色相 (Hue)</label>
+                <div class="slider-container">
+                    <input type="range" id="hue" min="0" max="360" value="240">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="saturation" class="control-label">飽和度 (Saturation)</label>
+                <div class="slider-container">
+                    <input type="range" id="saturation" min="0" max="100" value="100">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="brightness" class="control-label">亮度 (Brightness)</label>
+                <div class="slider-container">
+                    <input type="range" id="brightness" min="0" max="100" value="100">
+                </div>
+            </div>
+
+            <!-- --- 變更：原本的按鈕位置已移除 --- -->
+        </div>
+    </div>
+
+    <script>
+        // DOM元素參考
+        const canvas = document.getElementById('ring-canvas');
+        const ctx = canvas.getContext('2d');
+        const hueSlider = document.getElementById('hue');
+        const saturationSlider = document.getElementById('saturation');
+        const brightnessSlider = document.getElementById('brightness');
+        const controlButton = document.getElementById('control-button');
+
+        // 初始化變數
+        let frameCount = 0;
+        let hue = parseInt(hueSlider.value);
+        let saturation = parseInt(saturationSlider.value);
+        let brightness = parseInt(brightnessSlider.value);
+        let isActive = false; // 控制是否為加速狀態
+        const baseWaveSpeed = 0.5; // 基礎光波流動速度
+        const totalSegments = 720; // 增加線段數以獲得更平滑的視覺效果
+        const ringWidth = 8;
+
+        // 高斯波形相關變數
+        let gaussianWaves = []; // 儲存所有活動中的高斯波形
+        const baseMaxWaveHeight = 13; // 原本的隆起最大高度
+        let autoWaveInterval = null; // 新增：用於儲存自動隆起的計時器 ID
+
+        // 調整畫布尺寸以適應容器
+        function resizeCanvas() {
+            const size = canvas.parentElement.clientWidth;
+            canvas.width = size;
+            canvas.height = size;
+        }
+
+        // 更新CSS動畫速度
+        function updateAnimationSpeed() {
+            const ringContainer = document.querySelector('.ring-container');
+            if (isActive) {
+                // 加速4倍：從4s變為1s
+                ringContainer.style.animation = 'pulse-fast 1s infinite ease-in-out';
+            } else {
+                // 恢復原本速度
+                ringContainer.style.animation = 'pulse 4s infinite ease-in-out';
+            }
+        }
+
+        // 繪製圓環光波
+        function drawRing() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.globalCompositeOperation = 'lighter'; // 使用 'lighter' 模式疊加顏色，創建平滑的發光效果
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            const paddingForWave = baseMaxWaveHeight * 2 + (ringWidth / 2); // 確保隆起和光環本身都在範圍內
+
+            // 這是之前修改過的直徑放大 1.3 倍的程式碼
+            const ringCenterRadius = (canvas.width / 4 * 1.3) - paddingForWave;
+
+            if (ringCenterRadius <= ringWidth / 2) {
+                console.warn("Ring is too small to draw!");
+                return;
+            }
+
+            const outerRingRadius = ringCenterRadius + ringWidth / 2; // 光環外半徑
+
+            const currentWaveSpeed = isActive ? baseWaveSpeed * 4 : baseWaveSpeed;
+
+            // --- 繪製原始光環 ---
+            for (let i = 0; i < totalSegments; i++) {
+                const waveOffset = Math.sin((i + frameCount * currentWaveSpeed) * 0.05) * 20;
+                const segmentHue = (hue + waveOffset);
+                const brightnessFrequency = isActive ? 0.2 : 0.05;
+                const brightnessOffset = Math.sin(frameCount * brightnessFrequency) * 10 + 10;
+                let currentBrightness = Math.min(100, brightness + brightnessOffset);
+                const saturationOffset = Math.abs(Math.sin((i + frameCount * currentWaveSpeed) * 0.05) * 5);
+                let currentSaturation = Math.min(100, saturation + saturationOffset);
+
+                const hsbColor = `hsl(${segmentHue}, ${currentSaturation}%, ${currentBrightness}%)`;
+
+                ctx.beginPath();
+                ctx.strokeStyle = hsbColor;
+                ctx.lineWidth = ringWidth;
+
+                const startAngle = (i / totalSegments) * Math.PI * 2;
+                const endAngle = ((i + 1) / totalSegments) * Math.PI * 2;
+
+                ctx.arc(centerX, centerY, ringCenterRadius, startAngle, endAngle);
+                ctx.stroke();
+            }
+
+            // --- 繪製隆起的常態分佈波形 ---
+            gaussianWaves.forEach(wave => {
+                const now = performance.now();
+                let displacement = 0;
+                let opacity = 1;
+
+                if (wave.state === 'growing') {
+                    const progress = (now - wave.startTime) / wave.growthDuration;
+                    if (progress >= 1) {
+                        wave.state = 'peak';
+                        wave.peakTime = now;
+                    }
+                    displacement = wave.maxHeight * Math.sin(Math.min(1, progress) * Math.PI / 2);
+                } else if (wave.state === 'peak') {
+                    displacement = wave.maxHeight;
+                    if (now - wave.peakTime >= wave.peakDuration) {
+                        wave.state = 'fading';
+                        wave.fadeStartTime = now;
+                    }
+                } else if (wave.state === 'fading') {
+                    const progress = (now - wave.fadeStartTime) / wave.fadeDuration;
+                    opacity = Math.max(0, 1 - progress);
+                    displacement = wave.maxHeight * (1 - progress);
+                    if (progress >= 1) {
+                        wave.state = 'inactive';
+                    }
+                }
+
+                if (wave.state !== 'inactive') {
+                    const segmentIndexForColor = Math.floor((wave.clickAngle / 360) * totalSegments);
+                    const waveOffsetForColor = Math.sin((segmentIndexForColor + frameCount * currentWaveSpeed) * 0.05) * 20;
+                    const segmentHueForColor = (hue + waveOffsetForColor);
+                    const brightnessFrequencyForColor = isActive ? 0.2 : 0.05;
+                    const brightnessOffsetForColor = Math.sin(frameCount * brightnessFrequencyForColor) * 10 + 10;
+                    let currentBrightnessForColor = Math.min(100, brightness + brightnessOffsetForColor);
+                    const saturationOffsetForColor = Math.abs(Math.sin((segmentIndexForColor + frameCount * currentWaveSpeed) * 0.05) * 5);
+                    let currentSaturationForColor = Math.min(100, saturation + saturationOffsetForColor);
+
+                    const hsbColor = `hsl(${segmentHueForColor}, ${currentSaturationForColor}%, ${currentBrightnessForColor}%)`;
+
+                    ctx.globalAlpha = opacity;
+                    ctx.fillStyle = hsbColor;
+                    ctx.beginPath();
+
+                    const startAngleRad = (wave.clickAngle + wave.spread) * Math.PI / 180;
+                    const endAngleRad = (wave.clickAngle - wave.spread) * Math.PI / 180;
+
+                    let currentRad = startAngleRad;
+                    ctx.moveTo(centerX + outerRingRadius * Math.cos(currentRad),
+                        centerY + outerRingRadius * Math.sin(currentRad));
+
+                    for (let angle = wave.clickAngle + wave.spread; angle >= wave.clickAngle - wave.spread; angle -= 1) {
+                        const normalizedAngleDiff = Math.min(Math.abs(angle - wave.clickAngle), 360 - Math.abs(angle - wave.clickAngle));
+                        const gaussianFactor = Math.exp(-Math.pow(normalizedAngleDiff, 2) / (2 * Math.pow(wave.spread, 2)));
+                        const currentSegmentOuterRadius = outerRingRadius + displacement * gaussianFactor;
+                        const rad = angle * Math.PI / 180;
+                        ctx.lineTo(centerX + currentSegmentOuterRadius * Math.cos(rad),
+                            centerY + currentSegmentOuterRadius * Math.sin(rad));
+                    }
+
+                    ctx.arc(
+                        centerX,
+                        centerY,
+                        outerRingRadius,
+                        endAngleRad,
+                        startAngleRad
+                    );
+
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                }
+            });
+
+            frameCount++;
+            gaussianWaves = gaussianWaves.filter(wave => wave.state !== 'inactive');
+        }
+
+        function animate() {
+            drawRing();
+            requestAnimationFrame(animate);
+        }
+
+        function triggerWave(angle) {
+            const maxWaveHeight = baseMaxWaveHeight * 2;
+            gaussianWaves.push({
+                startTime: performance.now(),
+                growthDuration: 300,
+                peakDuration: 500,
+                fadeDuration: 700,
+                state: 'growing',
+                clickAngle: angle,
+                spread: 40,
+                maxHeight: maxWaveHeight,
+            });
+        }
+
+        function updateSliderBackgrounds() {
+            const currentHue = hue;
+            const currentSaturation = saturation;
+            saturationSlider.style.background = `linear-gradient(to right, hsl(${currentHue}, 0%, 50%), hsl(${currentHue}, 100%, 50%))`;
+            brightnessSlider.style.background = `linear-gradient(to right, hsl(${currentHue}, ${currentSaturation}%, 0%), hsl(${currentHue}, ${currentSaturation}%, 50%))`;
+        }
+
+        function toggleControl() {
+            isActive = !isActive;
+
+            if (isActive) {
+                controlButton.textContent = '暫停';
+                controlButton.classList.add('active');
+                autoWaveInterval = setInterval(() => {
+                    const randomAngle = Math.random() * 360;
+                    triggerWave(randomAngle);
+                }, 400);
+            } else {
+                controlButton.textContent = '開始';
+                controlButton.classList.remove('active');
+                clearInterval(autoWaveInterval);
+            }
+
+            updateAnimationSpeed();
+        }
+
+        // 優化：同時監聽 mousedown 和 touchstart 事件，以獲得更快的觸控反應
+        function handleCanvasInteraction(event) {
+            // 防止觸控事件觸發模擬的滑鼠事件
+            event.preventDefault();
+
+            const rect = canvas.getBoundingClientRect();
+            // 處理觸控和滑鼠的不同座標屬性
+            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+
+            const mouseX = clientX - rect.left;
+            const mouseY = clientY - rect.top;
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            const maxWaveHeight = baseMaxWaveHeight * 2;
+            const paddingForWave = maxWaveHeight + (ringWidth / 2);
+            // 這是之前修改過的直徑放大 1.3 倍的程式碼
+            const ringCenterRadiusForClick = (canvas.width / 4 * 1.3) - paddingForWave;
+
+            const distance = Math.sqrt(Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2));
+
+            if (distance >= ringCenterRadiusForClick - ringWidth / 2 && distance <= ringCenterRadiusForClick + ringWidth / 2 + maxWaveHeight) {
+                const angleRad = Math.atan2(mouseY - centerY, mouseX - centerX);
+                let clickAngleDeg = (angleRad * 180 / Math.PI + 360) % 360;
+                triggerWave(clickAngleDeg);
+            }
+        }
+
+        canvas.addEventListener('mousedown', handleCanvasInteraction);
+        canvas.addEventListener('touchstart', handleCanvasInteraction);
+
+        hueSlider.addEventListener('input', (e) => {
+            hue = parseInt(e.target.value);
+            updateSliderBackgrounds();
+        });
+
+        saturationSlider.addEventListener('input', (e) => {
+            saturation = parseInt(e.target.value);
+            updateSliderBackgrounds();
+        });
+
+        brightnessSlider.addEventListener('input', (e) => {
+            brightness = parseInt(e.target.value);
+            updateSliderBackgrounds();
+        });
+
+        controlButton.addEventListener('click', toggleControl);
+
+        window.addEventListener('resize', resizeCanvas);
+
+        window.onload = function() {
+            resizeCanvas();
+            updateSliderBackgrounds();
+            animate();
+        };
+    </script>
+</body>
+</html>
